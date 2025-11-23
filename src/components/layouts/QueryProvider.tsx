@@ -13,7 +13,7 @@ export const QueryProvider: FC<QueryProviderProps> = ({ children }) => {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60 * 5, // 5 دقائق
+        staleTime: 1000 * 60 * 5, 
       },
     },
   }));

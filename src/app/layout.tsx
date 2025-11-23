@@ -1,4 +1,3 @@
-// src/app/layout.tsx (تحديث لإضافة QueryProvider)
 import './globals.css';
 import { Navbar } from '@/components/layouts/Navbar';
 import { getSessionUser } from '@/features/auth/utils/auth';

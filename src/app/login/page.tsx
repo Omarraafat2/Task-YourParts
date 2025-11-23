@@ -6,7 +6,6 @@ import { getSessionUser } from '@/features/auth/utils/auth';
 export default async function LoginPage() {
   const user = await getSessionUser(); 
 
-  // إذا كان المستخدم مصادقًا، قم بتحويله
   if (user) {
     redirect('/');
   }

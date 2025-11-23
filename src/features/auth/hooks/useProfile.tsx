@@ -25,6 +25,8 @@ export const useProfile = () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+          credentials: 'include',   
+
       });
       if (!response.ok) throw new Error('Failed to update profile');
       return response.json();
