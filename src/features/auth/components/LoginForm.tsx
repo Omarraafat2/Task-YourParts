@@ -39,7 +39,8 @@ export function LoginForm() {
       }
       showToast.success('Welcome back! 👋');
 
-      router.push('/');
+   router.replace('/');
+router.refresh();
     } catch {
       setError('Unexpected error occurred.');
     }
