@@ -1,3 +1,4 @@
+// src/features/auth/hooks/useProfile.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { User } from '@/types/user';
 import { ProfileFormData } from '@/lib/validators/profileSchema';
@@ -8,25 +9,33 @@ export const useProfile = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  // Get profile
   const profile = useQuery<User>({
     queryKey: ['profile'],
     queryFn: async () => {
-      const response = await fetch('/api/profile');
+      const response = await fetch('/api/profile', {
+        credentials: 'include',
+        // ✅ مهم: disable cache للـ fetch
+        cache: 'no-store'
+      });
       if (!response.ok) throw new Error('Failed to fetch profile');
       return response.json();
     },
+    retry: false,
+    // ✅ اعمل refetch لما اليوزر يرجع للتاب
+    refetchOnWindowFocus: true,
+    // ✅ اعمل refetch لما يعمل mount
+    refetchOnMount: 'always',
+    // ✅ ميحفظش الـ data في الـ cache لفترة طويلة
+    staleTime: 0,
   });
 
-  // Update profile
   const updateProfile = useMutation({
     mutationFn: async (data: ProfileFormData) => {
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-          credentials: 'include',   
-
+        credentials: 'include',
       });
       if (!response.ok) throw new Error('Failed to update profile');
       return response.json();
@@ -41,7 +50,6 @@ export const useProfile = () => {
     },
   });
 
-  // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/auth/logout', {
@@ -51,16 +59,21 @@ export const useProfile = () => {
       if (!response.ok) throw new Error('Logout failed');
       return response.json();
     },
-    onSuccess: () => {
-      // امسح كل الـ cache
+    onSuccess: async () => {
+      // ✅ امسح كل الـ cache
       queryClient.clear();
       
       showToast.success('Logged out successfully! 👋');
+      
+      // ✅ استخدم router.push (client-side navigation)
       router.push('/login');
+      
+      // ✅ اعمل refresh للـ server components
       router.refresh();
     },
     onError: (error: Error) => {
       showToast.error(error.message);
+      router.push('/login');
     },
   });
 

@@ -1,35 +1,31 @@
 // src/app/api/auth/login/route.ts
-
 import { NextResponse } from 'next/server';
 import { ADMIN_CREDENTIALS } from '@/lib/constants';
-
-async function setAuthCookie(user: { name: string; email: string }) {
-  const token = btoa(JSON.stringify(user));
-  const isProduction = process.env.NODE_ENV === 'production';
-  const maxAge = 60 * 60 * 24 * 7; // 7 أيام
-
-  let cookie = `auth_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
-
-  if (isProduction) {
-    cookie += '; Secure'; 
-  }
-  
-  return cookie;
-}
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
 
   if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-    const user = { name: 'Admin User', email: ADMIN_CREDENTIALS.email };
+    const user = { 
+      name: 'Admin User', 
+      email: ADMIN_CREDENTIALS.email,
+      role: 'admin' 
+    };
     
-    const cookie = await setAuthCookie(user);
+    const token = btoa(JSON.stringify(user));
 
-    const response = NextResponse.json({ message: 'Login successful', user }, { status: 200 });
+    const response = NextResponse.json({ 
+      message: 'Login successful', 
+      user 
+    }, { status: 200 });
     
-    response.headers.set('Set-Cookie', cookie);
-    
-   
+    response.cookies.set('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
     
     return response;
   }
