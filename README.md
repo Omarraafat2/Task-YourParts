@@ -6,7 +6,7 @@ Includes authentication, CRUD operations, UI theming, and optimized app architec
 ---
 
 ##  Live Demo
- **Live App:** https://task-your-parts-git-main-omarraafat2s-projects.vercel.app
+ **Live App:** https://task-your-parts.vercel.app/
 
 ---
 
